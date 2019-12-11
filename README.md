@@ -32,7 +32,7 @@ We release the PyTorch code of the [Point-Voxel CNN](https://arxiv.org/abs/1907.
 
 The code is built with following libraries:
 - Python >= 3.6
-- [PyTorch](https://github.com/pytorch/pytorch) >= 1.0
+- [PyTorch](https://github.com/pytorch/pytorch) >= 1.3
 - [tensorboardX](https://github.com/lanpa/tensorboardX) >= 1.2
 - [h5py](https://github.com/h5py/h5py) >= 2.9.0
 - [numba](https://github.com/numba/numba)
