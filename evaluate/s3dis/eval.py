@@ -26,16 +26,12 @@ def prepare():
     else:
         gpus = []
 
-    print('==> loading configs from {}'.format(args.configs))
+    print(f'==> loading configs from {args.configs}')
     configs.update_from_modules(*args.configs)
-    configs.train.batch_size = 10
-    configs.dataset.split = 'test'
     # define save path
     save_path = get_save_path(*args.configs, prefix='runs')
     os.makedirs(save_path, exist_ok=True)
     configs.train.save_path = save_path
-    configs.train.checkpoint_path = os.path.join(save_path, 'latest.pth.tar')
-    configs.train.best_checkpoint_path = os.path.join(save_path, 'best.pth.tar')
 
     # override configs with args
     configs.update_from_arguments(*opts)
@@ -45,7 +41,14 @@ def prepare():
     else:
         configs.device = 'cuda'
         configs.device_ids = gpus
-    configs.train.stats_path = configs.train.best_checkpoint_path.replace('pth.tar', 'eval.npy')
+    configs.dataset.split = configs.evaluate.dataset.split
+    if 'best_checkpoint_path' not in configs.evaluate or configs.evaluate.best_checkpoint_path is None:
+        if 'best_checkpoint_path' in configs.train and configs.train.best_checkpoint_path is not None:
+            configs.evaluate.best_checkpoint_path = configs.train.best_checkpoint_path
+        else:
+            configs.evaluate.best_checkpoint_path = os.path.join(configs.train.save_path, 'best.pth.tar')
+    assert configs.evaluate.best_checkpoint_path.endswith('.pth.tar')
+    configs.evaluate.stats_path = configs.evaluate.best_checkpoint_path.replace('.pth.tar', '.eval.npy')
 
     return configs
 
@@ -80,37 +83,39 @@ def evaluate(configs=None):
 
     if configs.device == 'cuda':
         cudnn.benchmark = True
-    if 'seed' in configs and configs.seed is not None:
-        random.seed(configs.seed)
-        np.random.seed(configs.seed)
-        torch.manual_seed(configs.seed)
-        if configs.device == 'cuda' and configs.get('deterministic', True):
+        if configs.get('deterministic', False):
             cudnn.deterministic = True
             cudnn.benchmark = False
+    if ('seed' not in configs) or (configs.seed is None):
+        configs.seed = torch.initial_seed() % (2 ** 32 - 1)
+    seed = configs.seed
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
 
     print(configs)
 
-    if os.path.exists(configs.train.stats_path):
-        stats = np.load(configs.train.stats_path)
+    if os.path.exists(configs.evaluate.stats_path):
+        stats = np.load(configs.evaluate.stats_path)
         print_stats(stats)
         return
 
-    #####################################################################
-    # Initialize DataLoaders, Model, Criterion, LRScheduler & Optimizer #
-    #####################################################################
+    #################################
+    # Initialize DataLoaders, Model #
+    #################################
 
-    print('\n==> loading dataset "{}"'.format(configs.dataset))
+    print(f'\n==> loading dataset "{configs.dataset}"')
     dataset = configs.dataset()[configs.dataset.split]
 
-    print('\n==> creating model "{}"'.format(configs.model))
+    print(f'\n==> creating model "{configs.model}"')
     model = configs.model()
     if configs.device == 'cuda':
         model = torch.nn.DataParallel(model)
     model = model.to(configs.device)
 
-    if os.path.exists(configs.train.best_checkpoint_path):
-        print('==> loading checkpoint "{}"'.format(configs.train.best_checkpoint_path))
-        checkpoint = torch.load(configs.train.best_checkpoint_path)
+    if os.path.exists(configs.evaluate.best_checkpoint_path):
+        print(f'==> loading checkpoint "{configs.evaluate.best_checkpoint_path}"')
+        checkpoint = torch.load(configs.evaluate.best_checkpoint_path)
         model.load_state_dict(checkpoint.pop('model'))
         del checkpoint
     else:
@@ -138,11 +143,11 @@ def evaluate(configs=None):
             window_to_scene_mapping = h5f['indices_split_to_full'][...].astype(np.int64)
 
             num_windows, max_num_points_per_window, num_channels = scene_data.shape
-            extra_batch_size = configs.data.num_votes * math.ceil(max_num_points_per_window / dataset.num_points)
+            extra_batch_size = configs.evaluate.num_votes * math.ceil(max_num_points_per_window / dataset.num_points)
             total_num_voted_points = extra_batch_size * dataset.num_points
 
-            for min_window_index in range(0, num_windows, configs.train.batch_size):
-                max_window_index = min(min_window_index + configs.train.batch_size, num_windows)
+            for min_window_index in range(0, num_windows, configs.evaluate.batch_size):
+                max_window_index = min(min_window_index + configs.evaluate.batch_size, num_windows)
                 batch_size = max_window_index - min_window_index
                 window_data = scene_data[np.arange(min_window_index, max_window_index)]
                 window_data = window_data.reshape(batch_size, -1, num_channels)
@@ -176,7 +181,7 @@ def evaluate(configs=None):
         # update stats
         update_stats(stats, ground_truth, predictions, scene_index, total_num_points_in_scene)
 
-    np.save(os.path.join(configs.train.save_path, 'eval.stats.npy'), stats)
+    np.save(configs.evaluate.stats_path, stats)
     print_stats(stats)
 
 

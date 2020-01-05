@@ -5,11 +5,10 @@ __all__ = ['MeterS3DIS']
 
 class MeterS3DIS:
     def __init__(self, metric='iou', num_classes=13):
-        super(MeterS3DIS, self).__init__()
+        super().__init__()
         assert metric in ['overall', 'class', 'iou']
         self.metric = metric
         self.num_classes = num_classes
-        self.file_dic = {}
         self.reset()
 
     def reset(self):
@@ -19,7 +18,7 @@ class MeterS3DIS:
         self.total_seen_num = 0
         self.total_correct_num = 0
 
-    def update(self, outputs, targets):
+    def update(self, outputs: torch.Tensor, targets: torch.Tensor):
         # outputs: B x 13 x num_points, targets: B x num_points
         predictions = outputs.argmax(1)
         if self.metric == 'overall':

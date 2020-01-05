@@ -40,7 +40,7 @@ def prepare_label(data_dir, output_dir):
             print(path_annotations)
             path_prepare_label = os.path.join(output_dir, area, room)
             if os.path.exists(os.path.join(path_prepare_label, '.labels')):
-                print('{} already processed, skipping'.format(path_prepare_label))
+                print(f'{path_prepare_label} already processed, skipping')
                 continue
 
             xyz_room = np.zeros((1, 6))
@@ -56,12 +56,12 @@ def prepare_label(data_dir, output_dir):
                     val = object_dict[object_key]
                 except KeyError:
                     continue
-                print('{}/{}'.format(room, obj[:-4]))
+                print(f'{room}/{obj[:-4]}')
                 xyz_object_path = os.path.join(path_annotations, obj)
                 try:
                     xyz_object = np.loadtxt(xyz_object_path)[:, :]  # (N,6)
                 except ValueError as e:
-                    print('ERROR: cannot load {}: {}'.format(xyz_object_path, e))
+                    print(f'ERROR: cannot load {xyz_object_path}: {e}')
                     continue
                 label_object = np.tile(val, (xyz_object.shape[0], 1))  # (N,1)
                 xyz_room = np.vstack((xyz_room, xyz_object))
@@ -78,13 +78,13 @@ def prepare_label(data_dir, output_dir):
 
 
 def main():
-    default_data_dir = 'data/Stanford3dDataset_v1.2_Aligned_Version'
-    default_output_dir = 'data/s3dis'
+    default_data_dir = 'data/s3dis/Stanford3dDataset_v1.2_Aligned_Version'
+    default_output_dir = 'data/s3dis/pointcnn'
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--data', dest='data_dir', default=default_data_dir,
-                        help='Path to S3DIS data (default is {})'.format(default_data_dir))
+                        help=f'Path to S3DIS data (default is {default_data_dir})')
     parser.add_argument('-f', '--folder', dest='output_dir', default=default_output_dir,
-                        help='Folder to write labels (default is {})'.format(default_output_dir))
+                        help=f'Folder to write labels (default is {default_output_dir})')
     parser.add_argument('--max_num_points', '-m', help='Max point number of each sample', type=int, default=8192)
     parser.add_argument('--block_size', '-b', help='Block size', type=float, default=1.5)
     parser.add_argument('--grid_size', '-g', help='Grid size', type=float, default=0.03)
@@ -111,16 +111,16 @@ def main():
         for dataset_idx, dataset in enumerate(datasets):
             dataset_marker = os.path.join(folder, dataset, '.dataset')
             if os.path.exists(dataset_marker):
-                print('{}-{}/{} already processed, skipping'.format(datetime.now(), folder, dataset))
+                print(f'{datetime.now()}-{folder}/{dataset} already processed, skipping')
                 continue
             filename_data = os.path.join(folder, dataset, 'xyzrgb.npy')
-            print('{}-Loading {}...'.format(datetime.now(), filename_data))
+            print(f'{datetime.now()}-Loading {filename_data}...')
             # Modified according to PointNet convensions.
             xyzrgb = np.load(filename_data)
             xyzrgb[:, 0:3] -= np.amin(xyzrgb, axis=0)[0:3]
 
             filename_labels = os.path.join(folder, dataset, 'label.npy')
-            print('{}-Loading {}...'.format(datetime.now(), filename_labels))
+            print(f'{datetime.now()}-Loading {filename_labels}...')
             labels = np.load(filename_labels).astype(int).flatten()
 
             xyz, rgb = np.split(xyzrgb, [3], axis=-1)
@@ -140,18 +140,18 @@ def main():
                 idx_h5 = 0
                 idx = 0
 
-                print('{}-Computing block id of {} points...'.format(datetime.now(), xyzrgb.shape[0]))
+                print(f'{datetime.now()}-Computing block id of {xyzrgb.shape[0]} points...')
                 xyz_min = np.amin(xyz, axis=0, keepdims=True) - offset
                 xyz_max = np.amax(xyz, axis=0, keepdims=True)
                 block_size = (args.block_size, args.block_size, 2 * (xyz_max[0, -1] - xyz_min[0, -1]))
                 # Note: Don't split over z axis.
                 xyz_blocks = np.floor((xyz - xyz_min) / block_size).astype(np.int)
 
-                print('{}-Collecting points belong to each block...'.format(datetime.now(), xyzrgb.shape[0]))
+                print(f'{datetime.now()}-Collecting points belong to each block...')
                 blocks, point_block_indices, block_point_counts = np.unique(xyz_blocks, return_inverse=True,
                                                                             return_counts=True, axis=0)
                 block_point_indices = np.split(np.argsort(point_block_indices), np.cumsum(block_point_counts[:-1]))
-                print('{}-{} is split into {} blocks.'.format(datetime.now(), dataset, blocks.shape[0]))
+                print(f'{datetime.now()}-{dataset} is split into {blocks.shape[0]} blocks.')
 
                 block_to_block_idx_map = dict()
                 for block_idx in range(blocks.shape[0]):
@@ -181,7 +181,7 @@ def main():
                         block_point_indices[block_idx] = np.array([], dtype=np.int)
                         block_merge_count = block_merge_count + 1
                         break
-                print('{}-{} of {} blocks are merged.'.format(datetime.now(), block_merge_count, blocks.shape[0]))
+                print(f'{datetime.now()}-{block_merge_count} of {blocks.shape[0]} blocks are merged.')
 
                 idx_last_non_empty_block = 0
                 for block_idx in reversed(range(blocks.shape[0])):
@@ -255,8 +255,8 @@ def main():
                         if ((idx + 1) % batch_size == 0) or \
                                 (block_idx == idx_last_non_empty_block and block_split_idx == block_split_num - 1):
                             item_num = idx_in_batch + 1
-                            filename_h5 = os.path.join(folder, dataset, '{}_{:d}.h5'.format(offset_name, idx_h5))
-                            print('{}-Saving {}...'.format(datetime.now(), filename_h5))
+                            filename_h5 = os.path.join(folder, dataset, f'{offset_name}_{idx_h5:d}.h5')
+                            print(f'{datetime.now()}-Saving {filename_h5}...')
 
                             file = h5py.File(filename_h5, 'w')
                             file.create_dataset('data', data=data[0:item_num, ...])
@@ -267,14 +267,14 @@ def main():
                             file.close()
 
                             if args.save_ply:
-                                print('{}-Saving ply of {}...'.format(datetime.now(), filename_h5))
+                                print(f'{datetime.now()}-Saving ply of {filename_h5}...')
                                 filepath_label_ply = os.path.join(folder, dataset, 'ply_label',
-                                                                  'label_{}_{:d}'.format(offset_name, idx_h5))
+                                                                  f'label_{offset_name}_{idx_h5:d}')
                                 save_ply_property_batch(data[0:item_num, :, 0:3], label_seg[0:item_num, ...],
                                                         filepath_label_ply, data_num[0:item_num, ...], 14)
 
                                 filepath_rgb_ply = os.path.join(folder, dataset, 'ply_rgb',
-                                                                'rgb_{}_{:d}'.format(offset_name, idx_h5))
+                                                                f'rgb_{offset_name}_{idx_h5:d}')
                                 save_ply_color_batch(data[0:item_num, :, 0:3], data[0:item_num, :, 3:6] * 255,
                                                      filepath_rgb_ply, data_num[0:item_num, ...])
 
@@ -283,7 +283,7 @@ def main():
 
             # Marker indicating we've processed this dataset
             open(dataset_marker, 'w').close()
-    print('{}-Done.'.format(datetime.now()))
+    print(f'{datetime.now()}-Done.')
 
 
 def save_ply(points, filename, colors=None, normals=None):
@@ -343,7 +343,7 @@ def save_ply_color_batch(points_batch, colors_batch, file_path, points_num=None)
         if isinstance(file_path, (list, tuple)):
             save_ply(points_batch[batch_idx][:point_num], file_path[batch_idx], colors_batch[batch_idx][:point_num])
         else:
-            save_ply(points_batch[batch_idx][:point_num], '{}_{:04d}{}'.format(basename, batch_idx, ext),
+            save_ply(points_batch[batch_idx][:point_num], f'{basename}_{batch_idx:04d}{ext}',
                      colors_batch[batch_idx][:point_num])
 
 
@@ -361,7 +361,7 @@ def save_ply_property_batch(points_batch, property_batch, file_path, points_num=
                               property_max, file_path[batch_idx], cmap_name)
         else:
             save_ply_property(points_batch[batch_idx][:point_num], property_batch[batch_idx][:point_num],
-                              property_max, '{}_{:04d}{}'.format(basename, batch_idx, ext), cmap_name)
+                              property_max, f'{basename}_{batch_idx:04d}{ext}', cmap_name)
 
 
 if __name__ == '__main__':
