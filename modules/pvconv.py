@@ -9,14 +9,14 @@ __all__ = ['PVConv']
 
 
 class PVConv(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, resolution, with_se=False):
+    def __init__(self, in_channels, out_channels, kernel_size, resolution, with_se=False, normalize=True, eps=0):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         self.resolution = resolution
 
-        self.voxelization = Voxelization(resolution)
+        self.voxelization = Voxelization(resolution, normalize=normalize, eps=eps)
         voxel_layers = [
             nn.Conv3d(in_channels, out_channels, kernel_size, stride=1, padding=kernel_size // 2),
             nn.BatchNorm3d(out_channels, eps=1e-4),

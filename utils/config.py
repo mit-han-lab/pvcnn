@@ -1,7 +1,6 @@
 import collections
 import importlib.util
 import os
-from collections import deque
 
 import six
 
@@ -11,30 +10,19 @@ __all__ = ['Config', 'configs', 'update_configs_from_module', 'update_configs_fr
 
 
 class Config(G):
-    def __init__(self, func=None, args=None, detach=False, **kwargs):
+    def __init__(self, func=None, args=None, keys=None, detach=False, **kwargs):
         super().__init__(**kwargs)
 
         if func is not None and not callable(func):
             raise TypeError('func "{}" is not a callable function or class'.format(repr(func)))
         if args is not None and not isinstance(args, (collections.Sequence, collections.UserList)):
             raise TypeError('args "{}" is not an iterable tuple or list'.format(repr(args)))
-
-        self._func_ = func
-        self._args_ = args
-        self._detach_ = detach
-
-    def items(self):
-        for k, v in super().items():
-            if k not in ['_func_', '_args_', '_detach_']:
-                yield k, v
-
-    def keys(self):
-        for k, v in self.items():
-            yield k
-
-    def values(self):
-        for k, v in self.items():
-            yield v
+        if keys is not None and not isinstance(keys, (collections.Sequence, collections.UserList)):
+            raise TypeError('keys "{}" is not an iterable tuple or list'.format(repr(keys)))
+        self.__dict__['_func_'] = func
+        self.__dict__['_args_'] = args
+        self.__dict__['_detach_'] = detach
+        self.__dict__['_keys_'] = keys
 
     def __call__(self, *args, **kwargs):
         if self._func_ is None:
@@ -48,10 +36,11 @@ class Config(G):
 
         # override kwargs
         for k, v in self.items():
-            kwargs.setdefault(k, v)
+            if self._keys_ is None or k in self._keys_:
+                kwargs.setdefault(k, v)
 
         # recursively call non-detached funcs
-        queue = deque([args, kwargs])
+        queue = collections.deque([args, kwargs])
         while queue:
             x = queue.popleft()
 
@@ -77,9 +66,15 @@ class Config(G):
         text = ''
         if self._func_ is not None:
             text += ' ' * indent + '[func] = ' + str(self._func_)
+            extra = False
             if self._detach_:
-                text += '(detach=' + str(self._detach_) + ')'
-            text += '\n'
+                text += ' (detach=' + str(self._detach_)
+                extra = True
+            if self._keys_:
+                text += ', ' if extra else ' ('
+                text += 'keys=' + str(self._keys_)
+                extra = True
+            text += ')\n' if extra else '\n'
             if self._args_:
                 for k, v in enumerate(self._args_):
                     text += ' ' * indent + '[args:' + str(k) + '] = ' + str(v) + '\n'

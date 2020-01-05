@@ -31,9 +31,9 @@ class _S3DISDataset(Dataset):
         if self.split == 'train':
             for a in range(1, 7):
                 if a != self.holdout_area:
-                    areas.append(os.path.join(self.root, 'Area_{}'.format(a)))
+                    areas.append(os.path.join(self.root, f'Area_{a}'))
         else:
-            areas.append(os.path.join(self.root, 'Area_{}'.format(self.holdout_area)))
+            areas.append(os.path.join(self.root, f'Area_{self.holdout_area}'))
 
         self.num_scene_windows, self.max_num_points = 0, 0
         index_to_filename, scene_list = [], {}
@@ -45,7 +45,7 @@ class _S3DISDataset(Dataset):
                 current_scene = os.path.join(area, scene)
                 scene_list[current_scene] = []
                 for split in ['zero', 'half']:
-                    current_file = os.path.join(current_scene, '{}_0.h5'.format(split))
+                    current_file = os.path.join(current_scene, f'{split}_0.h5')
                     filename_to_start_index[current_file] = self.num_scene_windows
                     h5f = h5py.File(current_file, 'r')
                     num_windows = h5f['data'].shape[0]
