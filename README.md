@@ -177,6 +177,10 @@ In general, to train a model, one can run
 python train.py [config-file] --devices [gpu-ids]
 ```
 
+**NOTE**: During training, the meters will provide accuracies and IoUs.
+However, these are just rough estimations.
+One have to run the following command to get accurate evaluation.
+
 To evaluate trained models, one can do inference by running:
 
 ```
