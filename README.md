@@ -1,4 +1,4 @@
-# PVCNN: Point-Voxel CNN for Efficient 3D Deep Learning [[Website]](https://hanlab.mit.edu/projects/pvcnn/) [[arXiv]](https://arxiv.org/abs/1907.03739)
+# PVCNN: Point-Voxel CNN for Efficient 3D Deep Learning
 
 
 ```
