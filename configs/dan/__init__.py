@@ -1,7 +1,7 @@
 from utils.config import Config, configs
 
 # data configs
-configs.data.classes = ('Car', )
+configs.data.classes = ('Car',)
 configs.data.num_classes = len(configs.data.classes)
 
 # evaluate configs

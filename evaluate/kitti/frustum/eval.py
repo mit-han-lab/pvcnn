@@ -68,7 +68,7 @@ def evaluate(configs=None):
     from torch.utils.data import DataLoader
     from tqdm import tqdm
 
-    from ..utils import eval_from_files
+    from evaluate.kitti.utils import eval_from_files
 
     ###########
     # Prepare #
@@ -93,7 +93,7 @@ def evaluate(configs=None):
     # Initialize DataLoaders, Model #
     #################################
     print(f'\n==> loading dataset "{configs.dataset}"')
-    dataset = configs.dataset()[configs.dataset.split]
+    dataset = configs.evaluate.dataset()[configs.evaluate.dataset.split]
 
     print(f'\n==> creating model "{configs.model}"')
     model = configs.model()

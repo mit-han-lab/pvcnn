@@ -1,6 +1,6 @@
 import os
 
-__all__ = ['get_save_path']
+__all__ = ['get_save_path', 'loop_iterable']
 
 
 def get_save_path(*configs, prefix='runs'):
@@ -29,3 +29,8 @@ def get_save_path(*configs, prefix='runs'):
         return p
 
     return os.path.join(prefix, get_str(memo, ''))
+
+
+def loop_iterable(iterable):
+    while True:
+        yield from iterable

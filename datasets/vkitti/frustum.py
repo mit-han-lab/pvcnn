@@ -4,30 +4,33 @@ import pickle
 import numpy as np
 from torch.utils.data import Dataset
 
-from datasets.kitti.attributes import kitti_attributes as kitti
+from datasets.vkitti.attributes import vkitti_attributes as vkitti
 from utils.container import G
 
+scenes_dict = {"train": ["Scene01", "Scene02", "Scene06", "Scene18"],
+               "val": ["Scene20"]}
 
-class FrustumKitti(dict):
-    def __init__(self, root, num_points, split=None, classes=('Car', 'Pedestrian', 'Cyclist'),
+
+class FrustumVkitti(dict):
+    def __init__(self, root, num_points, split=None, classes=('Car', 'Van', 'Truck'),
                  num_heading_angle_bins=12, class_name_to_size_template_id=None,
                  from_rgb_detection=False, random_flip=False, random_shift=False, frustum_rotate=False):
         super().__init__()
         if class_name_to_size_template_id is None:
-            class_name_to_size_template_id = {cat: cls for cls, cat in enumerate(kitti.class_names)}
+            class_name_to_size_template_id = {cat: cls for cls, cat in enumerate(vkitti.class_names)}
         if not isinstance(split, (list, tuple)):
             if split is None:
                 split = ['train', 'val']
             else:
                 split = [split]
         if 'train' in split:
-            self['train'] = _FrustumKittiDataset(
+            self['train'] = _FrustumVkittiDataset(
                 root=root, num_points=num_points, split='train', classes=classes,
                 num_heading_angle_bins=num_heading_angle_bins,
                 class_name_to_size_template_id=class_name_to_size_template_id,
                 random_flip=random_flip, random_shift=random_shift, frustum_rotate=frustum_rotate)
         if 'val' in split:
-            self['val'] = _FrustumKittiDataset(
+            self['val'] = _FrustumVkittiDataset(
                 root=root, num_points=num_points, split='val', classes=classes,
                 num_heading_angle_bins=num_heading_angle_bins,
                 class_name_to_size_template_id=class_name_to_size_template_id,
@@ -35,7 +38,7 @@ class FrustumKitti(dict):
                 from_rgb_detection=from_rgb_detection)
 
 
-class _FrustumKittiDataset(Dataset):
+class _FrustumVkittiDataset(Dataset):
     def __init__(self, root, num_points, split, classes, num_heading_angle_bins, class_name_to_size_template_id,
                  from_rgb_detection=False, random_flip=False, random_shift=False, frustum_rotate=False):
         """
@@ -68,12 +71,7 @@ class _FrustumKittiDataset(Dataset):
         self.data = G()
 
         if self.from_rgb_detection:
-            if self.num_classes == 1:
-                file = f'frustum_caronly_{split}_rgb_detection.pickle'
-            else:
-                file = f'frustum_carpedcyc_{split}_rgb_detection.pickle'
-
-            with open(os.path.join(self.root, file), 'rb') as fp:
+            with open(os.path.join(self.root, f'frustum_caronly_{split}_rgb_detection.pickle'), 'rb') as fp:
                 self.data.ids = pickle.load(fp)
                 self.data.boxes_2d = pickle.load(fp, encoding='latin1')
                 self.data.point_clouds = pickle.load(fp, encoding='latin1')
@@ -82,22 +80,28 @@ class _FrustumKittiDataset(Dataset):
                 self.data.frustum_rotation_angles = pickle.load(fp, encoding='latin1')
                 self.data.probs = pickle.load(fp, encoding='latin1')
         else:
-            if self.num_classes == 1:
-                file = f'frustum_caronly_{split}.pickle'
-            else:
-                file = f'frustum_carpedcyc_{split}.pickle'
-
-            with open(os.path.join(self.root, file), 'rb') as fp:
-                self.data.ids = pickle.load(fp)
-                self.data.boxes_2d = pickle.load(fp, encoding='latin1')
-                self.data.boxes_3d = pickle.load(fp, encoding='latin1')
-                self.data.point_clouds = pickle.load(fp, encoding='latin1')
-                self.data.mask_logits = pickle.load(fp, encoding='latin1')
-                self.data.class_names = pickle.load(fp, encoding='latin1')
-                self.data.heading_angles = pickle.load(fp, encoding='latin1')
-                self.data.sizes = pickle.load(fp, encoding='latin1')
-                # frustum_angle is clockwise angle from positive x-axis
-                self.data.frustum_rotation_angles = pickle.load(fp, encoding='latin1')
+            self.data.ids = []
+            self.data.boxes_2d = []
+            self.data.boxes_3d = []
+            self.data.point_clouds = []
+            self.data.mask_logits = []
+            self.data.class_names = []
+            self.data.heading_angles = []
+            self.data.sizes = []
+            # frustum_angle is clockwise angle from positive x-axis
+            self.data.frustum_rotation_angles = []
+            for scene in scenes_dict[split]:
+                with open(os.path.join(self.root,
+                                       f'frustum_caronly_{split}_{scene}.pickle'), 'rb') as fp:
+                    self.data.ids.extend(pickle.load(fp))
+                    self.data.boxes_2d.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.boxes_3d.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.point_clouds.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.mask_logits.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.class_names.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.heading_angles.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.sizes.extend(pickle.load(fp, encoding='latin1'))
+                    self.data.frustum_rotation_angles.extend(pickle.load(fp, encoding='latin1'))
 
     def __len__(self):
         return len(self.data.point_clouds)
@@ -130,7 +134,7 @@ class _FrustumKittiDataset(Dataset):
         center = (self.data.boxes_3d[index][0, :] + self.data.boxes_3d[index][6, :]) / 2.0
         heading_angle = self.data.heading_angles[index]
         size_template_id = self.class_name_to_size_template_id[class_name]
-        size_residual = self.data.sizes[index] - kitti.class_name_to_size_template[class_name]
+        size_residual = self.data.sizes[index] - vkitti.class_name_to_size_template[class_name]
         if self.frustum_rotate:
             center = self.rotate_points_along_y(np.expand_dims(center, 0), rotation_angle).squeeze()
             heading_angle -= rotation_angle

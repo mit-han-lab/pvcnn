@@ -3,7 +3,8 @@ import torch
 import torch.optim as optim
 
 from datasets.kitti import FrustumKitti
-from datasets.kitti.attributes import kitti_attributes as kitti
+from datasets.vkitti import FrustumVkitti
+from datasets.vkitti.attributes import vkitti_attributes as vkitti
 from meters.kitti import MeterFrustumKitti
 from modules.frustum import FrustumPointNetLoss
 from evaluate.kitti.frustum.eval import evaluate
@@ -12,7 +13,7 @@ from utils.config import Config, configs
 # data configs
 configs.data.num_points_per_object = 512
 configs.data.num_heading_angle_bins = 12
-configs.data.size_template_names = kitti.class_names
+configs.data.size_template_names = vkitti.class_names
 configs.data.num_size_templates = len(configs.data.size_template_names)
 configs.data.class_name_to_size_template_id = {
     cat: cls for cls, cat in enumerate(configs.data.size_template_names)
@@ -22,13 +23,13 @@ configs.data.size_template_id_to_class_name = {
 }
 configs.data.size_templates = np.zeros((configs.data.num_size_templates, 3))
 for i in range(configs.data.num_size_templates):
-    configs.data.size_templates[i, :] = kitti.class_name_to_size_template[
+    configs.data.size_templates[i, :] = vkitti.class_name_to_size_template[
         configs.data.size_template_id_to_class_name[i]]
 configs.data.size_templates = torch.from_numpy(configs.data.size_templates.astype(np.float32))
 
 # dataset configs
-configs.dataset = Config(FrustumKitti)
-configs.dataset.root = 'data/kitti/frustum/frustum_data'
+configs.dataset = Config(FrustumVkitti)
+configs.dataset.root = 'data/vkitti/frustum/frustum_data'
 configs.dataset.num_points = 1024
 configs.dataset.classes = configs.data.classes
 configs.dataset.num_heading_angle_bins = configs.data.num_heading_angle_bins
@@ -52,7 +53,7 @@ configs.evaluate.dataset.class_name_to_size_template_id = configs.data.class_nam
 
 # train configs
 configs.train = Config()
-configs.train.num_epochs = 209
+configs.train.num_epochs = 100
 configs.train.batch_size = 32
 
 # train: meters

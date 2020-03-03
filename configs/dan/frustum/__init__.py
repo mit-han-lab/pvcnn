@@ -3,7 +3,8 @@ import torch
 import torch.optim as optim
 
 from datasets.kitti import FrustumKitti
-from datasets.kitti.attributes import kitti_attributes as kitti
+from datasets.vkitti.attributes import vkitti_attributes as vkitti
+from datasets.vkitti import FrustumVkitti
 from meters.kitti import MeterFrustumKitti
 from modules.frustum import FrustumPointNetLoss
 from evaluate.kitti.frustum.eval import evaluate
@@ -12,7 +13,7 @@ from utils.config import Config, configs
 # data configs
 configs.data.num_points_per_object = 512
 configs.data.num_heading_angle_bins = 12
-configs.data.size_template_names = kitti.class_names
+configs.data.size_template_names = vkitti.class_names
 configs.data.num_size_templates = len(configs.data.size_template_names)
 configs.data.class_name_to_size_template_id = {
     cat: cls for cls, cat in enumerate(configs.data.size_template_names)
@@ -22,27 +23,37 @@ configs.data.size_template_id_to_class_name = {
 }
 configs.data.size_templates = np.zeros((configs.data.num_size_templates, 3))
 for i in range(configs.data.num_size_templates):
-    configs.data.size_templates[i, :] = kitti.class_name_to_size_template[
+    configs.data.size_templates[i, :] = vkitti.class_name_to_size_template[
         configs.data.size_template_id_to_class_name[i]]
 configs.data.size_templates = torch.from_numpy(configs.data.size_templates.astype(np.float32))
 
 # dataset configs
-configs.dataset = Config(FrustumKitti)
-configs.dataset.root = 'data/kitti/frustum/frustum_data'
-configs.dataset.num_points = 1024
-configs.dataset.classes = configs.data.classes
-configs.dataset.num_heading_angle_bins = configs.data.num_heading_angle_bins
-configs.dataset.class_name_to_size_template_id = configs.data.class_name_to_size_template_id
-configs.dataset.random_flip = True
-configs.dataset.random_shift = True
-configs.dataset.frustum_rotate = True
-configs.dataset.from_rgb_detection = False
+configs.source_dataset = Config(FrustumVkitti)
+configs.source_dataset.root = 'data/vkitti/frustum/frustum_data'
+configs.source_dataset.num_points = 1024
+configs.source_dataset.classes = configs.data.classes
+configs.source_dataset.num_heading_angle_bins = configs.data.num_heading_angle_bins
+configs.source_dataset.class_name_to_size_template_id = configs.data.class_name_to_size_template_id
+configs.source_dataset.random_flip = True
+configs.source_dataset.random_shift = True
+configs.source_dataset.frustum_rotate = True
+configs.source_dataset.from_rgb_detection = False
+
+configs.target_dataset = Config(FrustumKitti)
+configs.target_dataset.root = 'data/kitti/frustum/frustum_data'
+configs.target_dataset.num_points = 1024
+configs.target_dataset.classes = configs.data.classes
+configs.target_dataset.num_heading_angle_bins = configs.data.num_heading_angle_bins
+configs.target_dataset.class_name_to_size_template_id = configs.data.class_name_to_size_template_id
+configs.target_dataset.random_flip = True
+configs.target_dataset.random_shift = True
+configs.target_dataset.frustum_rotate = True
+configs.target_dataset.from_rgb_detection = False
 
 # evaluate configs
 configs.evaluate.fn = evaluate
 configs.evaluate.batch_size = 32
 configs.evaluate.dataset = Config(FrustumKitti)
-configs.evaluate.dataset.from_rgb_detection = True
 configs.evaluate.dataset.root = 'data/kitti/frustum/frustum_data'
 configs.evaluate.dataset.split = "val"
 configs.evaluate.dataset.num_points = 1024
@@ -52,8 +63,8 @@ configs.evaluate.dataset.class_name_to_size_template_id = configs.data.class_nam
 
 # train configs
 configs.train = Config()
-configs.train.num_epochs = 209
-configs.train.batch_size = 32
+configs.train.num_epochs = 100
+configs.train.batch_size = 24
 
 # train: meters
 configs.train.meters = Config()
@@ -81,5 +92,12 @@ configs.train.criterion.heading_residual_loss_weight = 20.0
 configs.train.criterion.size_residual_loss_weight = 20.0
 
 # train: optimizer
-configs.train.optimizer = Config(optim.Adam)
-configs.train.optimizer.lr = 1e-3
+configs.train.base_lr = 1e-3
+configs.train.optimizer_g = Config(optim.Adam)
+configs.train.optimizer_g.lr = configs.train.base_lr
+
+configs.train.optimizer_cls = Config(optim.Adam)
+configs.train.optimizer_cls.lr = 2 * configs.train.base_lr
+
+configs.train.optimizer_dis = Config(optim.Adam)
+configs.train.optimizer_dis.lr = configs.train.base_lr
