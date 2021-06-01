@@ -94,14 +94,14 @@ The accuracy is tested following [PointCNN](https://github.com/yangyanli/PointCN
 |                                                  Models                                                     | Overall Acc |     mIoU     | 
 | :---------------------------------------------------------------------------------------------------------: | :---------: | :----------: |
 |  PointNet                                                                                                   |    82.54    |     42.97    |
-|  [PointNet (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pointnet.area5.pth.tar)    |    80.46    |     44.03    |
-|  [PVCNN (0.125 x C)](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pvcnn.area5.c0p125.pth.tar)   |    82.79    |   **48.75**  |
-|  [PVCNN (0.25  x C)](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pvcnn.area5.c0p25.pth.tar)    |    85.00    |   **53.08**  |
+|  [PointNet (Reproduce)](https://hanlab.mit.edu/files/pvcnn/s3dis.pointnet.area5.pth.tar)    |    80.46    |     44.03    |
+|  [PVCNN (0.125 x C)](https://hanlab.mit.edu/files/pvcnn/s3dis.pvcnn.area5.c0p125.pth.tar)   |    82.79    |   **48.75**  |
+|  [PVCNN (0.25  x C)](https://hanlab.mit.edu/files/pvcnn/s3dis.pvcnn.area5.c0p25.pth.tar)    |    85.00    |   **53.08**  |
 |  3D-UNet                                                                                                    |    85.12    |     54.93    |
-|  [PVCNN](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pvcnn.area5.c1.pth.tar)                   |    86.47    |   **56.64**  |
+|  [PVCNN](https://hanlab.mit.edu/files/pvcnn/s3dis.pvcnn.area5.c1.pth.tar)                   |    86.47    |   **56.64**  |
 |  PointCNN                                                                                                   |    85.91    |     57.26    |
-|  [PVCNN++ (0.5 x C)](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pvcnn2.area5.c0p5.pth.tar)    |    86.88    |   **58.30**  |
-|  [PVCNN++](https://hanlab.mit.edu/projects/pvcnn/files/models/s3dis.pvcnn2.area5.c1.pth.tar)                |    87.48    |   **59.02**  |
+|  [PVCNN++ (0.5 x C)](https://hanlab.mit.edu/files/pvcnn/s3dis.pvcnn2.area5.c0p5.pth.tar)    |    86.88    |   **58.30**  |
+|  [PVCNN++](https://hanlab.mit.edu/files/pvcnn/s3dis.pvcnn2.area5.c1.pth.tar)                |    87.48    |   **59.02**  |
 
 ### ShapeNet
 We compare PVCNN against the PointNet, PointNet++, 3D-UNet, Spider CNN and PointCNN performance as reported in the following table.
@@ -109,19 +109,19 @@ The accuracy is tested following [PointNet](https://github.com/charlesq34/pointn
 
 |                                                  Models                                                         |     mIoU     | 
 | :-------------------------------------------------------------------------------------------------------------: | :----------: |
-|  [PointNet (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pointnet.pth.tar)           |     83.5     |
+|  [PointNet (Reproduce)](https://hanlab.mit.edu/files/pvcnn/shapenet.pointnet.pth.tar)           |     83.5     |
 |  PointNet                                                                                                       |     83.7     |
 |  3D-UNet                                                                                                        |     84.6     |
-|  [PVCNN (0.25 x C)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pvcnn.c0p25.pth.tar)            |   **84.9**   |
-|  [PointNet++ SSG (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pointnet2ssg.pth.tar) |     85.1     |
+|  [PVCNN (0.25 x C)](https://hanlab.mit.edu/files/pvcnn/shapenet.pvcnn.c0p25.pth.tar)            |   **84.9**   |
+|  [PointNet++ SSG (Reproduce)](https://hanlab.mit.edu/files/pvcnn/shapenet.pointnet2ssg.pth.tar) |     85.1     |
 |  PointNet++ MSG                                                                                                 |     85.1     |
-|  [PVCNN (0.25 x C, DML)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pvcnn.c0p25.dml.pth.tar)   |   **85.1**   |
+|  [PVCNN (0.25 x C, DML)](https://hanlab.mit.edu/files/pvcnn/shapenet.pvcnn.c0p25.dml.pth.tar)   |   **85.1**   |
 |  SpiderCNN                                                                                                      |     85.3     |
-|  [PointNet++ MSG (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pointnet2msg.pth.tar) |     85.3     |
-|  [PVCNN (0.5  x C)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pvcnn.c0p5.pth.tar)             |   **85.5**   |
-|  [PVCNN](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pvcnn.c1.pth.tar)                          |   **85.8**   |
+|  [PointNet++ MSG (Reproduce)](https://hanlab.mit.edu/files/pvcnn/shapenet.pointnet2msg.pth.tar) |     85.3     |
+|  [PVCNN (0.5  x C)](https://hanlab.mit.edu/files/pvcnn/shapenet.pvcnn.c0p5.pth.tar)             |   **85.5**   |
+|  [PVCNN](https://hanlab.mit.edu/files/pvcnn/shapenet.pvcnn.c1.pth.tar)                          |   **85.8**   |
 |  PointCNN                                                                                                       |     86.1     |
-|  [PVCNN (DML)](https://hanlab.mit.edu/projects/pvcnn/files/models/shapenet.pvcnn.c1.dml.pth.tar)                |   **86.1**   |
+|  [PVCNN (DML)](https://hanlab.mit.edu/files/pvcnn/shapenet.pvcnn.c1.dml.pth.tar)                |   **86.1**   |
 
 
 ### KITTI
@@ -136,10 +136,10 @@ The list is keeping updated.
 |:--------------------------------------------------------------------------------------------------------------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|:-----------------:|
 |                                                                                                                      |        Easy       |      Moderate     |        Hard       |        Easy       |      Moderate     |        Hard       |        Easy       |      Moderate     |        Hard       |
 | Frustum PointNet                                                                                                     |       83.26       |       69.28       |       62.56       |         -         |         -         |         -         |         -         |         -         |         -         |
-| [Frustum PointNet (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/kitti.frustum.pointnet.pth.tar)    |   85.24 (85.17)   |   71.63 (71.56)   |   63.79 (63.78)   |   66.44 (66.83)   |   56.90 (57.20)   |   50.43 (50.54)   |   77.14 (78.16)   |   56.46 (57.41)   |   52.79 (53.66)   |
+| [Frustum PointNet (Reproduce)](https://hanlab.mit.edu/files/pvcnn/kitti.frustum.pointnet.pth.tar)    |   85.24 (85.17)   |   71.63 (71.56)   |   63.79 (63.78)   |   66.44 (66.83)   |   56.90 (57.20)   |   50.43 (50.54)   |   77.14 (78.16)   |   56.46 (57.41)   |   52.79 (53.66)   |
 | Frustum PointNet++                                                                                                   |       83.76       |       70.92       |       63.65       |       70.00       |       61.32       |       53.59       |       77.15       |       56.49       |       53.37       |
-| [Frustum PointNet++ (Reproduce)](https://hanlab.mit.edu/projects/pvcnn/files/models/kitti.frustum.pointnet2.pth.tar) |   84.72 (84.46)   |   71.99 (71.95)   |   64.20 (64.13)   |   68.40 (69.27)   |   60.03 (60.80)   |   52.61 (53.19)   |   75.56 (79.41)   |   56.74 (58.65)   | 53.33 (**54.82**) |
-| [Frustum PVCNN (Efficient)](https://hanlab.mit.edu/projects/pvcnn/files/models/kitti.frustum.pvcnne.pth.tar)         | **85.25 (85.30)** | **72.12 (72.22)** | **64.24 (64.36)** | **70.60 (70.60)** | **61.24 (61.35)** | **56.25 (56.38)** | **78.10 (79.79)** | **57.45 (58.72)** | **53.65 (54.81)** |
+| [Frustum PointNet++ (Reproduce)](https://hanlab.mit.edu/files/pvcnn/kitti.frustum.pointnet2.pth.tar) |   84.72 (84.46)   |   71.99 (71.95)   |   64.20 (64.13)   |   68.40 (69.27)   |   60.03 (60.80)   |   52.61 (53.19)   |   75.56 (79.41)   |   56.74 (58.65)   | 53.33 (**54.82**) |
+| [Frustum PVCNN (Efficient)](https://hanlab.mit.edu/files/pvcnn/kitti.frustum.pvcnne.pth.tar)         | **85.25 (85.30)** | **72.12 (72.22)** | **64.24 (64.36)** | **70.60 (70.60)** | **61.24 (61.35)** | **56.25 (56.38)** | **78.10 (79.79)** | **57.45 (58.72)** | **53.65 (54.81)** |
 
 
 ## Testing Pretrained Models
