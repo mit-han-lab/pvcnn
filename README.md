@@ -11,22 +11,6 @@
 }
 ```
 
-## Overview
-
-We release the PyTorch code of the [Point-Voxel CNN](https://arxiv.org/abs/1907.03739).
-<img src="https://hanlab.mit.edu/projects/pvcnn/figures/overview.png" width="1080">
-
-## Content
-
-- [Prerequisites](#prerequisites)
-- [Data Preparation](#data-preparation)
-- [Code](#code)
-- [Pretrained Models](#pretrained-models)
-- [Testing Pretrained Models](#testing-pretrained-models)
-- [Training](#training)
-
-<img src="https://hanlab.mit.edu/projects/pvcnn/figures/gif/PVCNN-livedemo-p1-480p.gif" width="1080"><img src="https://hanlab.mit.edu/projects/pvcnn/figures/gif/PVCNN-livedemo-p2-480p.gif" width="1080"><img src="https://hanlab.mit.edu/projects/pvcnn/figures/gif/PVCNN-livedemo-p3-480p.gif" width="1080">
-
 ## Prerequisites
 
 The code is built with following libraries (see [requirements.txt](requirements.txt)):
