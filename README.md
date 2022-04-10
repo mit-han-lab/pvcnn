@@ -187,7 +187,7 @@ For example, using pvcnn and two gpus to train
 python custom_train.py configs/custom/pvcnn/c1.py --devices 0, 1 
 ```
 
-If you want to do data augmentation, you can modify [configs/custom/__init__.py file]. Setting configs.data_aug = True.
+If you want to do data augmentation, you can modify [__init__.py](https://github.com/tomanick/pvcnn/blob/master/configs/s3dis/__init__.py). Setting configs.data_aug = True.
 
 
 ## License
