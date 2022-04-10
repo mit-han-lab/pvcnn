@@ -172,6 +172,15 @@ To evaluate trained models, one can do inference by running:
 python train.py [config-file] --devices [gpu-ids] --evaluate
 ```
 
+## Training for Custom Dataset
+
+To train custom dataset, you need to put point clouds data and corresponding groundtruth file under the specified folder. Their format is .npy file. The custom_dataset_loader will read files which under train and test folders as training data and testing data.
+
+```
+python custom_train.py [config-file] --devices [gpu-ids] --evaluate
+```
+
+
 ## License
 
 This repository is released under the MIT license. See [LICENSE](LICENSE) for additional details.
