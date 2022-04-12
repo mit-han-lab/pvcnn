@@ -7,7 +7,7 @@ from utils.config import Config, configs
 configs.model = Config(PVCNN)
 
 configs.model.num_classes = configs.data.num_classes
-configs.model.extra_feature_channels = 3
+configs.model.extra_feature_channels = 6
 
 configs.train.num_epochs = 250
 configs.train.scheduler = Config(optim.lr_scheduler.CosineAnnealingLR)
