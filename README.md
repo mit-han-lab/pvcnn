@@ -174,7 +174,7 @@ python train.py [config-file] --devices [gpu-ids] --evaluate
 
 ## Training Custom Dataset
 
-To train custom dataset, you need to put point clouds data and corresponding groundtruth files under the specified folder. Their format is ".npy" file. The custom_dataset_loader will read files which under train and test folders as training data and testing data. You could see here for example.
+To train custom dataset, you need to put point clouds data and corresponding groundtruth files under the specified folder. Their format is ".npy" file. The custom_dataset_loader will read files which under train and test folders as training data and testing data. You could see [here](https://github.com/tomanick/pvcnn/tree/master/data/custom_dataset) for example.
 
 In general, to train a model for custom dataset, one can run
 ```
@@ -187,7 +187,7 @@ For example, using pvcnn and two gpus to train
 python custom_train.py configs/custom/pvcnn/c1.py --devices 0, 1 
 ```
 
-If you want to do data augmentation, you can modify [__init__.py](https://github.com/tomanick/pvcnn/blob/master/configs/s3dis/__init__.py). Setting configs.data_aug = True.
+If you want to do data augmentation, you can modify [__init__.py](https://github.com/tomanick/pvcnn/blob/master/configs/custom/__init__.py). Setting configs.data_aug = True.
 
 
 ## License
