@@ -1,0 +1,3 @@
+Please put point cloud data (.npy files) and corresponding ground truth files (.npy files) under train and test folders.
+Note:
+The groundtruth folders should name "GT" so that it can be loaded by custom dataset loader.(Or you can change the loaded file name in datasets/custom_dataset.py)
