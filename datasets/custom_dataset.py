@@ -17,12 +17,10 @@ class Custom_Dataset(Dataset):
         self.with_normal = with_normal  # add rgb features or not
         self.normalize = normalize
         self.jitter = jitter
-        self.data_aug = data_aug
-        
+        self.data_aug = data_aug        
 
         self.file_paths, self.file_labels = [], []
-        
-            
+                    
         for dirPath, dirNames, fileNames in os.walk(os.path.join(self.dataset_path, split)):
             if dirPath.split("\\")[-1] == "GT":
                 for f in fileNames:
@@ -30,8 +28,7 @@ class Custom_Dataset(Dataset):
             else:
                 for f in fileNames:
                     self.file_paths.append(os.path.join(dirPath, f))
-
-        
+      
         self.cache = {}  # from index to (point_set, rgb, gt) tuple
         self.cache_size = 20000
 
